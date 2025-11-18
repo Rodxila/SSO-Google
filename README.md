@@ -105,6 +105,15 @@ Requisitos mínimos
 
 Variables necesarias
 - Crea un archivo `.env` en la raíz del proyecto con estas variables:
+# Guía rápida para el evaluador
+
+Objetivo: arrancar la aplicación y verificar el flujo SSO con Google.
+
+Requisitos mínimos
+- Docker y Docker Compose instalados en la máquina del evaluador.
+
+Variables necesarias
+- Crea un archivo `.env` en la raíz del proyecto con estas variables:
 
 ```
 SECRET_KEY="valor-secreto-cualquiera"
@@ -128,7 +137,7 @@ Qué comprobar
 - Tras el login deberías ver tu nombre y que se ha creado un usuario en la base de datos (`db.sqlite3`).
 - Reinicia el contenedor (`Ctrl+C` en la terminal y vuelve a `docker compose up`) y vuelve a iniciar sesión para comprobar persistencia.
 
-Si necesitas acceder al admin Django (opcional)
+Acceso al admin Django (opcional)
 - Crear un superuser dentro del contenedor:
 
 ```powershell
