@@ -1,13 +1,14 @@
-# Guía rápida para el evaluador
+# SSO Google (Django + django-allauth)
 
-Objetivo
-- Arrancar la aplicación y verificar el flujo de inicio de sesión con Google (SSO).
+Breve descripción
+- Pequeña aplicación Django que muestra un flujo de inicio de sesión con Google (SSO) usando `django-allauth`.
 
-Requisitos mínimos
-- Docker y Docker Compose instalados en la máquina del evaluador.
+Requisitos
+- Docker y Docker Compose (recomendado).  
+- Opcional (desarrollo): Python 3.11+, `pip` y `virtualenv`.
 
-Variables necesarias
-- Crear un archivo `.env` en la raíz del proyecto con estas variables:
+Variables de entorno
+- Crea un archivo `.env` en la raíz del proyecto con, como mínimo:
 
 ```
 SECRET_KEY="valor-secreto-cualquiera"
@@ -16,8 +17,8 @@ GOOGLE_CLIENT_ID=TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=TU_GOOGLE_CLIENT_SECRET
 ```
 
-Arranque rápido
-1) Ejecutar en PowerShell:
+Ejecución rápida (usar Docker)
+1) Desde la raíz del proyecto ejecutar:
 
 ```powershell
 docker compose up --build
@@ -25,27 +26,46 @@ docker compose up --build
 
 2) Abrir en el navegador: `http://localhost:9778/`
 
-Verificaciones principales
-- Pulsar "Iniciar sesión con Google" y completar el flujo.
-- Tras iniciar sesión deberías ver tu nombre y un usuario creado en la base de datos local (`db.sqlite3`).
-- Reiniciar el servicio y volver a iniciar sesión para confirmar persistencia.
+La imagen y el `entrypoint` están preparados para ejecutar migraciones, `collectstatic` y el comando `init_socialapp` al arrancar, por lo que, con las variables correctas en `.env`, no es necesario configuración manual en el admin.
 
-Acceso al panel de administración (opcional)
-- Crear un superusuario dentro del contenedor:
+Uso y comprobaciones
+- Pulsa "Iniciar sesión con Google" y completa el flujo de OAuth.
+- Tras completar el login verás tu nombre y se creará un usuario en la base de datos local (`db.sqlite3`).
+- Reinicia el servicio y vuelve a iniciar sesión para comprobar persistencia.
+
+Desarrollo local (opcional, si no quieres Docker)
+1) Crear entorno virtual, instalar dependencias y ejecutar localmente:
+
+```powershell
+python -m venv .venv
+& .\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+cp .env.example .env # editar valores
+& .\.venv\Scripts\python.exe manage.py migrate
+& .\.venv\Scripts\python.exe manage.py init_socialapp
+& .\.venv\Scripts\python.exe manage.py runserver 0.0.0.0:9778
+```
+
+Acceso al admin (opcional)
+- Crear un superusuario dentro del contenedor o localmente:
 
 ```powershell
 docker compose run --rm prodigiosovolcan python manage.py createsuperuser
 ```
 
-- Entrar en `http://localhost:9778/admin/`.
+Luego acceder a `http://localhost:9778/admin/`.
 
-Notas técnicas rápidas
-- El contenedor ejecuta automáticamente migraciones, `collectstatic` e `init_socialapp` al arrancar.
-- La aplicación usa SQLite (`db.sqlite3`) por defecto; el fichero se guarda en la raíz del proyecto.
+Configuración de Google OAuth
+- En Google Cloud Console crea credenciales OAuth (aplicación web) y añade:
+	- Authorized redirect URI: `http://localhost:9778/accounts/google/login/callback/`
+	- Authorized JavaScript origin: `http://localhost:9778`
 
-Problemas comunes
-- Si el inicio de sesión falla por redirect URI, verifica en Google Cloud Console que `http://localhost:9778/accounts/google/login/callback/` esté registrado.
-- Si no ves estilos, espera a que termine `collectstatic` al arrancar el contenedor o recarga la página.
+Notas de seguridad y despliegue
+- No comites el archivo `.env` con credenciales reales. Usa `.env.example` como plantilla.
+- En producción usa un mecanismo seguro de gestión de secretos (Vault, secretos del proveedor o variables de entorno del orquestador).
 
-Contacto
-- Si quieres que prepare un entorno con HTTPS o añada pruebas adicionales, dímelo y lo preparo.
+Resolución de problemas comunes
+- Error de redirect: verifica que la URL de callback esté registrada en Google Cloud Console.
+- Problemas con CSS/estilos: espera a que `collectstatic` finalice o forzar recarga del navegador.
+
+Si quieres que deje todas las plantillas totalmente en español (texto visible en la UI), puedo buscarlas y traducirlas ahora.
