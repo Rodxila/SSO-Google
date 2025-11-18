@@ -96,17 +96,91 @@ If you want, I can add a simple GitHub Actions workflow that builds the Docker i
 ```
 
 2. Log into `http://localhost:9778/admin/` and create a `SocialApp` (provider: Google) with your credentials and attach it to the default `example.com` site (or change the site `domain` to `localhost:9778` first).
+# ProdigioSOVolcan — SSO con Google (Django + django-allauth)
 
-## Extra (nginx + https)
+Este repositorio contiene una pequeña aplicación Django que demuestra inicio de sesión mediante Google (SSO) usando `django-allauth`.
 
-To respond on a subdomain via HTTPS with Let's Encrypt, add an `nginx` service and certbot to your `docker-compose.yml`. The key steps:
+Objetivo para el evaluador: ejecutar la aplicación con un único comando y verificar el flujo SSO. El servicio Docker se llama `prodigiosovolcan` y expone el puerto `9778`.
 
-- Configure an `nginx` container as reverse proxy that forwards the subdomain to `prodigiosovolcan:9778`.
-- Make your DNS point the subdomain to your machine, or use `/etc/hosts` for local dev.
-- Use `certbot` to request certificates for that domain; mount them into `nginx` and serve HTTPS.
+Requisitos previos
+- Tener Docker y Docker Compose instalados en la máquina del evaluador.
+- (Opcional para pruebas locales) Python 3.11+, `pip` y `docker` instalados.
 
-I can provide a sample `docker-compose.yml` + `nginx` configuration if you want to add the HTTPS proxy.
+Ejecución (único paso)
 
----
+1. Copia o crea un archivo `.env` en la raíz del proyecto con las variables obligatorias (no subirlo al repositorio):
 
-If you want, I can also add automatic creation of `SocialApp` via migrations or create a `docker-compose` override for local development to run `manage.py migrate` and `init_socialapp` automatically on container start.
+```
+SECRET_KEY="cualquier-valor-seguro"
+DEBUG=1
+GOOGLE_CLIENT_ID=TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=TU_GOOGLE_CLIENT_SECRET
+```
+
+2. Levantar la aplicación (recomendado):
+
+```powershell
+docker compose up --build
+```
+
+Esto construye la imagen y levanta el servicio `prodigiosovolcan` (puerto mapeado `9778:9778`). El `entrypoint` del contenedor ejecuta automáticamente: migraciones, `collectstatic` y el comando `init_socialapp` que crea/actualiza la `SocialApp` de Google usando `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
+
+URLs útiles
+- Aplicación: http://localhost:9778/
+- Callback de Google (debe estar configurado en Google Console):
+	- `http://localhost:9778/accounts/google/login/callback/`
+- Admin Django (si creas superuser dentro del contenedor o localmente): http://localhost:9778/admin/
+
+Qué verificar como evaluador
+- Abrir la página principal y hacer clic en "Iniciar sesión con Google".
+- Tras completar el flujo de Google deberías ver tu nombre en pantalla y un usuario creado en la base de datos SQLite (`db.sqlite3`).
+- Reiniciar el contenedor y volver a iniciar sesión para confirmar persistencia de usuarios.
+
+Credenciales de Google (configuración)
+- En Google Cloud Console crea unas credenciales OAuth 2.0 del tipo "Client ID" (aplicación web).
+- Establece:
+	- Authorized redirect URIs: `http://localhost:9778/accounts/google/login/callback/`
+	- Authorized JavaScript origins: `http://localhost:9778`
+- Usa los valores en el `.env` o como secretos en tu plataforma de despliegue.
+
+Notas para auditoría técnica
+- Servicio Docker: el `docker-compose.yml` define el servicio `prodigiosovolcan` y monta variables desde `.env`.
+- El contenedor inicializa la app automáticamente (migrate + init_socialapp). No se requiere intervención en el panel Django para crear la `SocialApp`.
+- La base de datos por defecto es SQLite (`db.sqlite3`) para simplicidad y persistencia entre reinicios del contenedor (si el volumen/archivo se mantiene en la carpeta del proyecto).
+
+Desarrollo local sin Docker (opcional)
+- Crear virtualenv (PowerShell):
+
+```powershell
+python -m venv .venv
+& .\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+cp .env.example .env # editar valores
+& .\.venv\Scripts\python.exe manage.py migrate
+& .\.venv\Scripts\python.exe manage.py init_socialapp
+& .\.venv\Scripts\python.exe manage.py runserver 0.0.0.0:9778
+```
+
+Seguridad y manejo de secretos
+- NO comitees tu `.env` con credenciales reales. Usa `.env.example` para documentar variables.
+- En CI/production usa el gestor de secretos de la plataforma (GitHub Secrets, Vault, etc.) y no el archivo `.env` del repositorio.
+
+Acceso al admin (si necesitas inspeccionar datos)
+- Crear superuser manualmente dentro del contenedor o en local:
+
+```powershell
+& .\.venv\Scripts\python.exe manage.py createsuperuser
+```
+
+HTTPS / producción (opcional)
+- Como extra puedes añadir un proxy `nginx` y `certbot` al `docker-compose.yml` para servir HTTPS con Let's Encrypt en un dominio real. Puedo proporcionar un ejemplo si lo deseas.
+
+¿Qué hice para que esto sea evaluable rápidamente?
+- Añadí un script de entrada (`docker-entrypoint.sh`) que ejecuta `migrate`, `collectstatic` y el comando `init_socialapp`.
+- El comando `init_socialapp` crea/actualiza la `SocialApp` de Google a partir de las variables de entorno, evitando pasos manuales en el Admin.
+
+Próximos pasos (opcional)
+- Puedo añadir un workflow de GitHub Actions que construya la imagen y la publique en un registro (GHCR o Docker Hub).
+- Si quieres, genero el ejemplo de `docker-compose` con `nginx` + `certbot` para facilitar el despliegue HTTPS.
+
+Si quieres que yo haga el commit y el push de este `README.md` actualizado al repositorio remoto, dímelo y lo realizo.
