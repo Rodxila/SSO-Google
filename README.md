@@ -7,24 +7,50 @@ Requisitos
 - Docker y Docker Compose (recomendado).  
 - Opcional (desarrollo): Python 3.11+, `pip` y `virtualenv`.
 
-Variables de entorno
-- Crea un archivo `.env` en la raíz del proyecto con, como mínimo:
-
-```
-SECRET_KEY="valor-secreto-cualquiera"
-DEBUG=1
-GOOGLE_CLIENT_ID=TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=TU_GOOGLE_CLIENT_SECRET
-```
 
 Ejecución rápida (usar Docker)
-1) Desde la raíz del proyecto ejecutar:
+0) Cómo obtener el `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`
+
+1) Abrir Google Cloud Console: https://console.cloud.google.com/
+
+2) Crear o seleccionar un proyecto.
+
+3) Configurar la pantalla de consentimiento (OAuth Consent Screen):
+	- En el menú lateral selecciona "APIs y servicios" → "Pantalla de consentimiento OAuth".
+	- Elige tipo "Externa" (si el proyecto será usado por cualquier cuenta) o "Interna" (solo cuentas de la organización).
+	- Rellena el nombre de la aplicación, correo de soporte y dominios autorizados si se solicita.
+	- Añade los scopes básicos: `openid`, `email`, `profile` (suelen ser suficientes para este ejemplo).
+
+4) Crear credenciales OAuth 2.0:
+	- En el menú lateral selecciona "APIs y servicios" → "Credenciales" → "Crear credenciales" → "ID de cliente de OAuth".
+	- Tipo de aplicación: "Aplicación web".
+	- En "Orígenes de JavaScript autorizados" añade: `http://localhost:9778`
+	- En "URI de redireccionamiento autorizados" añade: `http://localhost:9778/accounts/google/login/callback/`
+	- Crear y copia el `Client ID` y el `Client secret` que te proporcione la consola.
+
+5) Pegar las credenciales en tu `.env` local
+	- Crea el archivo `.env` en la raíz del proyecto y añade/actualiza:
+
+```
+GOOGLE_CLIENT_ID=tu-client-id-aqui.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=tu-client-secret-aqui
+```
+
+6) Consideraciones finales
+	- Si usas el proyecto para pruebas con cuentas externas, la verificación del consentimiento de Google puede tardar o requerir que añadas usuarios de prueba; para uso local en desarrollo suele bastar con añadir los datos y probar el flujo.
+	- No compartas el `GOOGLE_CLIENT_SECRET` públicamente. Manténlo en `.env` o en el sistema de gestión de secretos que uses.
+
+
+
+
+
+7) Desde la raíz del proyecto ejecutar:
 
 ```powershell
 docker compose up --build
 ```
 
-2) Abrir en el navegador: `http://localhost:9778/`
+8) Abrir en el navegador: `http://localhost:9778/`
 
 La imagen y el `entrypoint` están preparados para ejecutar migraciones, `collectstatic` y el comando `init_socialapp` al arrancar, por lo que, con las variables correctas en `.env`, no es necesario configuración manual en el admin.
 
@@ -33,39 +59,4 @@ Uso y comprobaciones
 - Tras completar el login verás tu nombre y se creará un usuario en la base de datos local (`db.sqlite3`).
 - Reinicia el servicio y vuelve a iniciar sesión para comprobar persistencia.
 
-Desarrollo local (opcional, si no quieres Docker)
-1) Crear entorno virtual, instalar dependencias y ejecutar localmente:
 
-```powershell
-python -m venv .venv
-& .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-cp .env.example .env # editar valores
-& .\.venv\Scripts\python.exe manage.py migrate
-& .\.venv\Scripts\python.exe manage.py init_socialapp
-& .\.venv\Scripts\python.exe manage.py runserver 0.0.0.0:9778
-```
-
-Acceso al admin (opcional)
-- Crear un superusuario dentro del contenedor o localmente:
-
-```powershell
-docker compose run --rm prodigiosovolcan python manage.py createsuperuser
-```
-
-Luego acceder a `http://localhost:9778/admin/`.
-
-Configuración de Google OAuth
-- En Google Cloud Console crea credenciales OAuth (aplicación web) y añade:
-	- Authorized redirect URI: `http://localhost:9778/accounts/google/login/callback/`
-	- Authorized JavaScript origin: `http://localhost:9778`
-
-Notas de seguridad y despliegue
-- No comites el archivo `.env` con credenciales reales. Usa `.env.example` como plantilla.
-- En producción usa un mecanismo seguro de gestión de secretos (Vault, secretos del proveedor o variables de entorno del orquestador).
-
-Resolución de problemas comunes
-- Error de redirect: verifica que la URL de callback esté registrada en Google Cloud Console.
-- Problemas con CSS/estilos: espera a que `collectstatic` finalice o forzar recarga del navegador.
-
-Si quieres que deje todas las plantillas totalmente en español (texto visible en la UI), puedo buscarlas y traducirlas ahora.
