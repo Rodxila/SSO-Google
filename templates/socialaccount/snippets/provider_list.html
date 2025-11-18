@@ -1,0 +1,10 @@
+{% load socialaccount %}
+{% get_providers as socialaccount_providers %}
+{% if socialaccount_providers %}
+  <div class="provider-list">
+    {% for provider in socialaccount_providers %}
+      {% provider_login_url provider process=process as href %}
+      <a class="btn-google provider-{{ provider.id }}" href="{{ href }}">{{ provider.name }}</a>
+    {% endfor %}
+  </div>
+{% endif %}

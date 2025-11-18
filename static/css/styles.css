@@ -1,0 +1,59 @@
+/* Basic page styling for SSO demo */
+:root{
+  --bg:#f7f9fc;
+  --accent:#1f6feb;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box}
+body{
+  font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+  margin:0; color:#111827; -webkit-font-smoothing:antialiased;
+}
+.container{
+  max-width:920px;
+  margin:6rem auto;
+  padding:2.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, .08);
+}
+.header{display:flex; align-items:center; gap:1rem}
+.logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(90deg,#6ee7b7,#60a5fa); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700}
+h1{font-size:1.6rem; margin:0}
+p.lead{color:var(--muted); margin:0.5rem 0 1.25rem}
+.hero{display:flex; align-items:center; justify-content:space-between; gap:1rem}
+.user{font-weight:600}
+.btn-google{display:inline-flex; align-items:center; gap:.6rem; padding:.6rem 1rem; border-radius:8px; border:1px solid #e6e6e6}
+.btn-google:hover{transform:translateY(-1px)}
+.btn-google .gicon{width:20px; height:20px;display:inline-block}
+.footer{margin-top:1.75rem; color:var(--muted); font-size:0.95rem}
+center{display:block;text-align:center}
+
+/* Styling for the allauth base templates */
+.auth-card{padding:2rem; border-radius:12px; background:linear-gradient(180deg,#fff,#fafafa); border:1px solid #eef2f7}
+.messages{margin: .6rem 0; padding:.6rem 1rem; border-radius:8px; background:#fffbeb; color:#92400e; border: 1px solid #ffe6a7}
+.auth-card h1{font-size:1.3rem; margin-bottom:0.5rem}
+.auth-card p{color:var(--muted)}
+.auth-card form{display:flex; justify-content:center; gap:1rem}
+.auth-card button{background:var(--accent); color:white; border-radius:8px; padding:.9rem 1.6rem; border:none; cursor:pointer; font-size:1rem}
+.auth-card button:hover{filter:brightness(.96); transform: translateY(-1px)}
+.provider-list{display:flex; gap:1rem; justify-content:center; margin:1.25rem 0}
+.provider-google{background: #fff; border:1px solid #e5e7eb; padding:.6rem 1rem; border-radius:8px}
+.menu{margin-bottom:1rem}
+.menu a{color:var(--accent); text-decoration:none}
+
+/* Center the auth card vertically on short pages */
+html,body{height:100%}
+body{display:flex; align-items:center; justify-content:center; padding:2rem}
+.container{margin:0; width:100%; max-width:720px}
+
+/* Provider button tweaks */
+.provider-google{display:inline-flex; align-items:center; gap:.6rem}
+.btn-google span{font-weight:600}
+
+@media (max-width:600px){
+  .header{flex-direction:row; gap:.6rem}
+  .logo{width:48px;height:48px}
+  .container{padding:1.25rem}
+}

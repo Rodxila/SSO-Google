@@ -1,0 +1,7 @@
+Django>=4.2
+django-allauth>=0.59
+requests
+PyJWT
+cryptography
+gunicorn
+python-dotenv

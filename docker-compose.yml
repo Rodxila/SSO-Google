@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  prodigiosovolcan:
+    build: .
+    container_name: prodigiosovolcan
+    env_file: .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "9778:9778"
+    volumes:
+      - ./:/app   # opcional en dev para hot-reload
+    networks:
+      - prodnet
+
+  # si quieres nginx/proxy añade un servicio aquí y depends_on: - prodigiosovolcan
+
+networks:
+  prodnet:
+    driver: bridge

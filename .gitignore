@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Environments
+.venv/
+env/
+venv/
+
+# Django stuff:
+db.sqlite3
+/media
+/staticfiles
+
+# dotenv
+.env
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+
+# Docker
+docker-compose.override.yml
+
+# OS files
+Thumbs.db

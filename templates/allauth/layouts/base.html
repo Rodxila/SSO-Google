@@ -1,0 +1,37 @@
+{% load static i18n %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block head_title %}{% endblock head_title %} — Prodigioso Volcán</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">PV</div>
+      <div>
+        <h1>Prodigioso Volcán</h1>
+        <p class="lead">SSO Demo — inicia sesión con tu cuenta de Google</p>
+      </div>
+    </div>
+
+    {% if messages %}
+      <div class="messages">
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <main class="auth-card">
+      {% block content %}{% endblock content %}
+    </main>
+
+    <div class="footer">Puedes usar tu cuenta de Google para autenticarte de manera segura.</div>
+  </div>
+</body>
+</html>
