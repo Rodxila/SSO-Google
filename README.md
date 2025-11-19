@@ -12,7 +12,7 @@ Ejecución rápida (usar Docker)
 
 0) clonar el repositorio https://github.com/Rodxila/SSO-Google.git
 
-1)Cómo obtener el `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`:
+1) Cómo obtener el `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`:
 
   Abrir Google Cloud Console: https://console.cloud.google.com/
 
