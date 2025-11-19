@@ -9,6 +9,7 @@ Requisitos
 
 
 Ejecución rápida (usar Docker)
+
 0) Cómo obtener el `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`
 
 1) Abrir Google Cloud Console: https://console.cloud.google.com/
