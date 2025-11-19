@@ -10,9 +10,11 @@ Requisitos
 
 Ejecución rápida (usar Docker)
 
-0) Cómo obtener el `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`
+0) clonar el repositorio https://github.com/Rodxila/SSO-Google.git
 
-1) Abrir Google Cloud Console: https://console.cloud.google.com/
+1)Cómo obtener el `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`:
+
+  Abrir Google Cloud Console: https://console.cloud.google.com/
 
 2) Crear o seleccionar un proyecto.
 
