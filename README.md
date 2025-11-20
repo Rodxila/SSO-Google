@@ -12,7 +12,7 @@ Ejecución rápida (usar Docker)
 
 0) clonar el repositorio
 ```powershell
- git clone https://github.com/Rodixla/SSO-Google.git
+ git clone https://github.com/Rodxila/SSO-Google.git
 	cd SSO-Google
 ```
 
