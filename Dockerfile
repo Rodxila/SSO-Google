@@ -1,22 +1,19 @@
 FROM python:3.11-slim
 WORKDIR /app
 
-# Copia e instala dependencias
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copia todo el proyecto
+COPY . /app
 
-# Copia el código
-COPY . .
+# Instala dependencias
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-ENV PYTHONUNBUFFERED=1
-
-# Exponer puerto que usa Django (9778)
-EXPOSE 9778
-
-# Copy entrypoint and make executable
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+# Da permisos al script de entrada
 RUN chmod +x /app/docker-entrypoint.sh
 
-# Comando por defecto: entrypoint runs migrations/init_socialapp then exec gunicorn
+# Configura entorno
+ENV PYTHONUNBUFFERED=1
+EXPOSE 9778
+
+# Ejecuta el script como punto de entrada
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["gunicorn", "myproject.wsgi:application", "--bind", "0.0.0.0:9778", "--workers", "1"]
